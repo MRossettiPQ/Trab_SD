@@ -12,7 +12,7 @@ void        *jogoBatalha                                    (void *);
 
 int main(int argc, char *argv[])
 {
-    int socket_desc , client_sock , c;
+    int socket_desc , client_sock , aux;
     struct sockaddr_in server , client;
      
     //Criar o socket
@@ -21,9 +21,8 @@ int main(int argc, char *argv[])
     {
         printf("Não foi possível criar o soquete");
     }
-    imprimeROXO("\nSocket criado\n");
-
-    printf("\n %s\n", argv[1]);
+    imprimeROXO("\nSocket criado");
+    printf("\nPORTA USADA: \x1b\031[1;31m %s \x1b[0m\n", argv[1]);
     
     //Preparar o sockaddr_in em uma estrutura
     server.sin_family = AF_INET;
@@ -41,15 +40,15 @@ int main(int argc, char *argv[])
     //Aguarda conexão
     listen(socket_desc , USERMAX);                                                                  //Numero maximo de conexões    
     puts("Esperando por entradas das conexões");
-    c = sizeof(struct sockaddr_in);
+    aux = sizeof(struct sockaddr_in);
     listaSocket jogosIniciados[USERMAX/2];
 	pthread_t thread_id;
 	int cont;
     
-    while((jogosIniciados[0].listSock[0]  = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c)))
+    while((jogosIniciados[0].listSock[0]  = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&aux)))
     {
         imprimeVERDE("\nConexão foi aceita!!");
-        jogosIniciados[0].listSock[1] = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&c);
+        jogosIniciados[0].listSock[1] = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&aux);
         imprimeVERDE("\nConexão foi aceita!!");
         if(pthread_create(&thread_id, NULL,  jogoBatalha, (void*)&jogosIniciados) < 0)
         {
@@ -57,7 +56,7 @@ int main(int argc, char *argv[])
             return 1;
         }
     }
-	if (client_sock < 0)
+	if (socket_desc < 0)
     {
         perror("Falhou em se conectar!!");
         return 1;
@@ -80,40 +79,38 @@ void *jogoBatalha(void *socket_desc)
     strcpy(auxiliarNome[0], "Aguardando Nome");
     strcpy(mensagem, auxiliarNome[0]);
 
-    write(jogoIniciado[0].listSock[0], mensagem, TAMSG);                            //ENVIA SUA VEZ
-    read (jogoIniciado[0].listSock[0], mensagem, TAMSG);                            //RECEBE NOME DE USUARIO
+	send(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //ENVIA SUA VEZ 
+    checkOk1 = recv(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //RECEBE NOME DE USUARIO   
     strcpy(auxiliarNome[1], mensagem);
     printf("\n Mensagem 1 = %s", mensagem);
 
-    write(jogoIniciado[0].listSock[1], mensagem, TAMSG);                            //ENVIA SUA VEZ
-    read (jogoIniciado[0].listSock[1], mensagem, TAMSG);                            //RECEBE NOME DE USUARIO
+	send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0);                          //ENVIA SUA VEZ
+    checkOk2 = recv(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0);                          //RECEBE NOME DE USUARIO                           
     strcpy(auxiliarNome[0], mensagem);
     printf("\n Mensagem 2 = %s", mensagem);
     strcpy(mensagem, "OK");
 
     //ENVIA OK E RECEBE O MAPA DO JOGADOR 1
-    write(jogoIniciado[0].listSock[0], mensagem, TAMSG);                            //  ENVIA OK JOGADOR 1
-    checkOk1 = recv(jogoIniciado[0].listSock[0], (declaraMapa*)mapaJodadorUm, sizeof(mapaJodadorUm), 0);
-    //read (jogoIniciado[0].listSock[0], (declaraMapa*)mapaJodadorUm, sizeof(mapaJodadorUm));       //  RECEBE MATRIZ MAPA JOGADOR 1
-    printf("\n");    
-    mostraMapa(mapaJodadorUm);                                                                   //  IMPRIME MAPA JOGADOR 1
+	send(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 1                        
+    checkOk1 = recv(jogoIniciado[0].listSock[0], mapaJodadorUm, sizeof(mapaJodadorUm), 0); //  RECEBE MATRIZ MAPA JOGADOR 1     
+    printf("\nJOGADOR 1\n");    
+    mostraMapa(mapaJodadorUm);                                                      //  IMPRIME MAPA JOGADOR 1
     
 
     //ENVIA OK E RECEBE O MAPA DO JOGADOR 2
-    write(jogoIniciado[0].listSock[1], mensagem, TAMSG);                            //  ENVIA OK JOGADOR 2
-    checkOk2 = recv(jogoIniciado[0].listSock[1], (declaraMapa*)mapaJodadorDois, sizeof(mapaJodadorDois), 0);
-    //read (jogoIniciado[0].listSock[1], (declaraMapa*)mapaJodadorDois, sizeof(mapaJodadorDois));   //  RECEBE MATRIZ MAPA JOGADOR 2
-    printf("\n");   
-    mostraMapa(mapaJodadorDois);                                                              //  IMPRIME MAPA JOGADOR 2
+	send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 2
+    checkOk2 = recv(jogoIniciado[0].listSock[1], mapaJodadorDois, sizeof(mapaJodadorDois), 0); //  RECEBE MATRIZ MAPA JOGADOR 2
+    printf("\nJOGADOR 2\n");   
+    mostraMapa(mapaJodadorDois);                                                    //  IMPRIME MAPA JOGADOR 2
  
 
     strcpy(mensagem, "OK");                                                         //  ENVIA OK JOGADOR 1
-    write(jogoIniciado[0].listSock[0] , mensagem, TAMSG); 
+    send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0); 
     int aux = 0, aux2 = 1; 
     while(1)
     {  
-        read (jogoIniciado[0].listSock[aux], mensagem, TAMSG);
-        write (jogoIniciado[0].listSock[aux2], mensagem, TAMSG);
+        recv(jogoIniciado[0].listSock[aux], mensagem, TAMSG, 0);                       //  ENVIA OK JOGADOR 1
+        send(jogoIniciado[0].listSock[aux2], mensagem, TAMSG, 0); 
         printf("\nRECEBEU A COORDENADA: %s", mensagem);
         
         if(aux == 0)

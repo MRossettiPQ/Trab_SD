@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 		
 
 		bemVindo();
-		read(sock_conn, mensagem, TAMSG);
+		checkOk = recv(sock_conn, mensagem, TAMSG, 0);        
 		printf("Conectou: %s\n\n", mensagem);
 		printf("Seu nome no jogo: ");
 		fgets(mensagem, 30, stdin);
@@ -47,20 +47,19 @@ int main(int argc, char *argv[])
 		}
 		strcpy(auxiliarNome[0], mensagem);
 		system("clear");
-		write(sock_conn , mensagem, TAMSG); 
-		printf("\nAguarde sua vez!!\n");
+		send(sock_conn, mensagem, TAMSG, 0);                         	//ENVIA SUA VEZ 
+    	printf("\nAguarde sua vez!!\n");
 
-		read (sock_conn , mensagem, TAMSG);        						//RECEBE OK
-		mapaJodadorUm = criaMapa();										//JOGADOR ADICIONA SUAS PEÇAS
+		checkOk = recv(sock_conn, mensagem, TAMSG, 0);         			//RECEBE OK
 		
+		mapaJodadorUm = criaMapa();										//JOGADOR ADICIONA SUAS PEÇAS
 		printf("\nMAPA ADICIONADO FOI\n");
 		mostraMapa(mapaJodadorUm);
-		//write(sock_conn , (declaraMapa*)mapaJodadorUm, sizeof(mapaJodadorUm)); 		//ENVIA MATRIZ MAPA JOGADOR
-		send(sock_conn, (declaraMapa*)mapaJodadorUm, sizeof(mapaJodadorUm), 0);
+		
+		send(sock_conn, mapaJodadorUm, sizeof(mapaJodadorUm), 0);
 	while(1)
 	{  
-		send(sock_conn, mensagem, TAMSG, 0);
-		//read (sock_conn , mensagem, TAMSG);        						//RECEBE OK
+		send(sock_conn, mensagem, TAMSG, 0);							//RECEBE OK
 
 		printf("\nAtacado na Cordenada X/Y: %s", mensagem);
 
@@ -71,7 +70,6 @@ int main(int argc, char *argv[])
 			mensagem[strlen(mensagem) - 1] = '\0';
 		}
 		checkOk = recv(sock_conn, mensagem, TAMSG, 0);
-		//write(sock_conn , mensagem, TAMSG); 
 	}
 	system("clear");		
 	return 0;	
