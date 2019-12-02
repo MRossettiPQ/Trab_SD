@@ -11,7 +11,8 @@
 int main(int argc, char *argv[])
 	{
     	printf("\n IP - %s : %s\n", argv[1], argv[2]);
-    	declaraMapa *mapaJodadorUm = alocaMatriz();   //TABULEIRO DO JOGADOR DOIS
+    	declaraMapa *mapaJodadorUm = alocaMatriz();   //TABULEIRO DO JOGADOR UM
+    	declaraMapa *mapaAdversario = alocaMatriz();   //TABULEIRO DO JOGADOR DOIS
 		
     	int i, Barcos, cordX, cordY, orientation, checkOk; // Ship insertion
 		int fimJogo;
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
 		}
 		send(sock_conn, (declaraMapa*)&mapaJodadorUm->navioUsado, sizeof(mapaJodadorUm->navioUsado), 0);
 		send(sock_conn, (declaraMapa*)&mapaJodadorUm->Total, sizeof(mapaJodadorUm->Total), 0);
+		system("clear");
 	while(1)
 	{  
 		send(sock_conn, mensagem, TAMSG, 0);							//RECEBE OK
