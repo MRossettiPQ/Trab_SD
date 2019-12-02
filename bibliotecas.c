@@ -33,7 +33,7 @@ void bemVindo                       ()
 int atacaBarco                      (declaraMapa *mapaAtacado, int cordX, int cordY)
 {
     //Verifica se o ataque foi dentro do mapa designado
-    if (cordX > mapaAtacado->Largura || cordX < 0 || cordY > mapaAtacado->Largura || cordY < 0)
+    if (cordX > larguraMAX || cordX < 0 || cordY > alturaMAX || cordY < 0)
     {
         return -1;
     }
@@ -71,7 +71,7 @@ int insereBarco                     (declaraMapa *mapaDeclarado, int Barco, int 
 
     if (orientacao == VERTICAL)
     {
-        if (cordX >= mapaDeclarado->Altura || cordY + Tamanho - 1 >= mapaDeclarado->Largura)
+        if (cordX >= alturaMAX || cordY + Tamanho - 1 >= larguraMAX)
         {
             return -1;
         }
@@ -79,7 +79,7 @@ int insereBarco                     (declaraMapa *mapaDeclarado, int Barco, int 
 
     if (orientacao == HORIZONTAL)
     {
-        if (cordY >= mapaDeclarado->Largura || cordX + Tamanho - 1 >= mapaDeclarado->Altura)
+        if (cordY >= larguraMAX || cordX + Tamanho - 1 >= alturaMAX)
         {
             return -1;
         }
@@ -189,9 +189,9 @@ int confereMapa                     (declaraMapa *mapaDeclarado)
 {
     int cordY, cordX;
 
-    for(cordY = 0; cordY < mapaDeclarado->Largura; cordY++)
+    for(cordY = 0; cordY < larguraMAX; cordY++)
     {
-        for(cordX = 0; cordX < mapaDeclarado->Altura; cordX++)
+        for(cordX = 0; cordX < alturaMAX; cordX++)
         {
             if (mapaDeclarado->Mapa[cordY][cordX] == NAVIO)
             {    
@@ -261,15 +261,9 @@ declaraMapa *alocaMatriz            ()
     declaraMapa *mapaIniciado = malloc(sizeof(declaraMapa));
     int cordX, cordY;
 
-    mapaIniciado->Largura = larguraMAX;
-    mapaIniciado->Altura = alturaMAX;
-
-    mapaIniciado->Mapa = malloc(larguraMAX * sizeof(int *));
-
-    for(cordX=0; cordX < mapaIniciado->Largura; cordX++)
+    for(cordX=0; cordX < larguraMAX; cordX++)
     {
-        mapaIniciado->Mapa[cordX] = malloc(alturaMAX * sizeof(int));
-        for(cordY=0; cordY < mapaIniciado->Altura; cordY++)
+        for(cordY=0; cordY < alturaMAX; cordY++)
         {
             mapaIniciado->Mapa[cordX][cordY] = 0;
         }
@@ -314,7 +308,7 @@ declaraMapa *criaMapa               ()
         printf("Posição da ponta do navio\n");
         printf("CordX: ");
         scanf("%i", &cordX);
-        while(cordX > mapaJogo->Largura || cordX < 0)
+        while(cordX > larguraMAX || cordX < 0)
         {
             imprimeVERMELHO("Coordenada invalida\n");
                 printf("Escolha outra Coordenada X: ");
@@ -323,7 +317,7 @@ declaraMapa *criaMapa               ()
 
         printf("CordY: ");
         scanf("%i", &cordY);
-        while(cordY > mapaJogo->Altura || cordY < 0)
+        while(cordY > alturaMAX || cordY < 0)
         {
             imprimeVERMELHO("Coordenada invalida\n");
                 printf("Escolha outra Coordenada Y: ");

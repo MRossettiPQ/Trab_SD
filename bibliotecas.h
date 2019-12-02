@@ -11,7 +11,7 @@
     #include <sys/wait.h>	                    //  MACROS PARA FUNÇÕES DE ESPERA: waitpid ()
     #include <pthread.h>                        //  USADO PARA CRIAR THREADS, PROCESSAMENTO MULTITAREFA, LINK PARA <lpthread.h>
     #include <sys/types.h>                      //  OUTROS MACROS USADOS PARA FUNÇÕES POSIX
-
+    #include <sys/uio.h>
 
     //TABULEIROS E TAMANHO DA PARTIDA
     #define larguraMAX          10              //  DEFINE A LARGURA QUE O TABULEIRO TERÁ
@@ -66,12 +66,13 @@
     //Conjunto de dados presente em um Tabuleiro de mapa
     typedef struct estruturaMapa
     {   
-        int Largura;                            //  LARGURA MAXIMA DO MAPA
-        int Altura;                             //  ALTURA MAXIMA DO MAPA
-        char **Mapa;                             //  ARMAZENA O MAPA
+        int Mapa[alturaMAX][larguraMAX];                             //  ARMAZENA O MAPA
         int navioUsado[TIPOSNAVIO];             //  TIPO DE NAVIO USADO
         int Total;                              //  QUANTIDADE DE NAVIOS RESTANTES
     } declaraMapa;
+    
+
+
     
 #define BIBLIOTECAS_H
 #endif

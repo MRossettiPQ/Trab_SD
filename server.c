@@ -92,6 +92,8 @@ void *jogoBatalha(void *socket_desc)
 
     //ENVIA OK E RECEBE O MAPA DO JOGADOR 1
 	send(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 1                        
+    
+    
     checkOk1 = recv(jogoIniciado[0].listSock[0], mapaJodadorUm, sizeof(mapaJodadorUm), 0); //  RECEBE MATRIZ MAPA JOGADOR 1     
     printf("\nJOGADOR 1\n");    
     mostraMapa(mapaJodadorUm);                                                      //  IMPRIME MAPA JOGADOR 1
