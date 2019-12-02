@@ -1,6 +1,7 @@
 /*
     Para compilar no terminal use:
     gcc server.c -lpthread -o server
+    ./server 31000
     Servidor para Thread
 */
 #include "bibliotecas.h"
@@ -90,21 +91,28 @@ void *jogoBatalha(void *socket_desc)
     printf("\n Mensagem 2 = %s", mensagem);
     strcpy(mensagem, "OK");
 
+    int cont;
     //ENVIA OK E RECEBE O MAPA DO JOGADOR 1
-	send(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 1                        
-    
-    
-    checkOk1 = recv(jogoIniciado[0].listSock[0], mapaJodadorUm, sizeof(mapaJodadorUm), 0); //  RECEBE MATRIZ MAPA JOGADOR 1     
+	send(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 1                            
+    for(cont = 0; cont < larguraMAX; cont++)
+    {
+        read(jogoIniciado[0].listSock[0], (declaraMapa*)&mapaJodadorUm->Mapa[cont], sizeof(mapaJodadorUm->Mapa[cont])); //  RECEBE MATRIZ MAPA JOGADOR 1         
+    }
+    read(jogoIniciado[0].listSock[0], (declaraMapa*)&mapaJodadorUm->navioUsado, sizeof(mapaJodadorUm->navioUsado));
+    read(jogoIniciado[0].listSock[0], (declaraMapa*)&mapaJodadorUm->Total, sizeof(mapaJodadorUm->Total));
     printf("\nJOGADOR 1\n");    
     mostraMapa(mapaJodadorUm);                                                      //  IMPRIME MAPA JOGADOR 1
     
-
     //ENVIA OK E RECEBE O MAPA DO JOGADOR 2
-	send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 2
-    checkOk2 = recv(jogoIniciado[0].listSock[1], mapaJodadorDois, sizeof(mapaJodadorDois), 0); //  RECEBE MATRIZ MAPA JOGADOR 2
-    printf("\nJOGADOR 2\n");   
-    mostraMapa(mapaJodadorDois);                                                    //  IMPRIME MAPA JOGADOR 2
- 
+	send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 1                            
+    for(cont = 0; cont < larguraMAX; cont++)
+    {
+        read(jogoIniciado[0].listSock[1], (declaraMapa*)&mapaJodadorDois->Mapa[cont], sizeof(mapaJodadorDois->Mapa[cont])); //  RECEBE MATRIZ MAPA JOGADOR 1         
+    }
+    read(jogoIniciado[0].listSock[1], (declaraMapa*)&mapaJodadorDois->navioUsado, sizeof(mapaJodadorDois->navioUsado));
+    read(jogoIniciado[0].listSock[1], (declaraMapa*)&mapaJodadorDois->Total, sizeof(mapaJodadorDois->Total));
+    printf("\nJOGADOR 2\n");    
+    mostraMapa(mapaJodadorDois);       
 
     strcpy(mensagem, "OK");                                                         //  ENVIA OK JOGADOR 1
     send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0); 

@@ -70,9 +70,6 @@
         int navioUsado[TIPOSNAVIO];             //  TIPO DE NAVIO USADO
         int Total;                              //  QUANTIDADE DE NAVIOS RESTANTES
     } declaraMapa;
-    
-
-
-    
+       
 #define BIBLIOTECAS_H
 #endif

@@ -2,7 +2,8 @@
 /*
     Para compilar no terminal use:
     gcc client.c -lpthread -o client
-    Cliente Simples Para Servidor com Thread
+    ./client 127.0.0.1 31000
+	Cliente Simples Para Servidor com Thread
 */
 #include "bibliotecas.h"
 #include "bibliotecas.c"
@@ -56,7 +57,13 @@ int main(int argc, char *argv[])
 		printf("\nMAPA ADICIONADO FOI\n");
 		mostraMapa(mapaJodadorUm);
 		
-		send(sock_conn, mapaJodadorUm, sizeof(mapaJodadorUm), 0);
+		//send(sock_conn, (declaraMapa*)&mapaJodadorUm, sizeof(declaraMapa), 0);
+		for(cont = 0; cont < larguraMAX; cont++)
+		{
+			send(sock_conn, (declaraMapa*)&mapaJodadorUm->Mapa[cont], sizeof(mapaJodadorUm->Mapa[cont]), 0); //  RECEBE MATRIZ MAPA JOGADOR 1     
+		}
+		send(sock_conn, (declaraMapa*)&mapaJodadorUm->navioUsado, sizeof(mapaJodadorUm->navioUsado), 0);
+		send(sock_conn, (declaraMapa*)&mapaJodadorUm->Total, sizeof(mapaJodadorUm->Total), 0);
 	while(1)
 	{  
 		send(sock_conn, mensagem, TAMSG, 0);							//RECEBE OK
