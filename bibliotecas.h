@@ -70,6 +70,11 @@
         int navioUsado[TIPOSNAVIO];             //  TIPO DE NAVIO USADO
         int Total;                              //  QUANTIDADE DE NAVIOS RESTANTES
     } declaraMapa;
-       
+    typedef struct estruturaAtaque
+    {   
+        char cordX;
+        char cordY;
+        char Celula;
+    } declaraAtaque;
 #define BIBLIOTECAS_H
 #endif

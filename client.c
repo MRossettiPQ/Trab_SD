@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     	printf("\n IP - %s : %s\n", argv[1], argv[2]);
     	declaraMapa *mapaJodadorUm = alocaMatriz();   //TABULEIRO DO JOGADOR UM
     	declaraMapa *mapaAdversario = alocaMatriz();   //TABULEIRO DO JOGADOR DOIS
-		
+		declaraAtaque envieiAtaque;
     	int checkOk, fimJogo, sock_conn, val, aux, cont;
 		char mensagem[TAMSG], auxiliarNome[2][TAMSG];
 		char cordX[TAMSG], cordY[TAMSG], celula[TAMSG];;
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 		system("clear");
 		printf("\nAguarde sua vez!!\n");                        	//ENVIA SUA VEZ 
 		send(sock_conn, auxiliarNome[0], TAMSG, 0); 
-		system("clear");
+		//system("clear");
 
 		if(strcmp(auxiliarNome[1], "Aguardando Nome") == 0)
 		{
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 			imprimeVERMELHO("\n\nNÃO ESTA OK PARA O MAPA");
 		}
 		
-		printf("\nAguarde sua vez!!\n"); 
+		imprimeVERDE("\nAguarde sua vez!!"); 
 	 	read(sock_conn, mensagem, TAMSG);
 		while(1)
 		{
@@ -101,6 +101,7 @@ int main(int argc, char *argv[])
 			mostraMapa(mapaAdversario);
 			//RECEBE AUTORIZAÇÂO PARA INICIAR O ATAQUE OU RECEBER ATAQUE
 			verificaUsuario(read(sock_conn, mensagem, TAMSG));
+			printf("\nMENSAGEM RECEBIDA: %s", mensagem);
 			if(strcmp(mensagem, "SUA VEZ") == 0)
 			{
 				//COORDENADA X
@@ -131,26 +132,35 @@ int main(int argc, char *argv[])
 					}
 					if((atoi(cordY) > larguraMAX) && (atoi(cordY) < 0))
 					{
-						printf("\nCordX invalida!! Tente um valor abaixo de %i", larguraMAX);
+						printf("\nCordY invalida!! Tente um valor abaixo de %i", larguraMAX);
 					} 
-					printf("\nAguarde o envio!!\n");                        	//ENVIA SUA VEZ 
-					send(sock_conn, cordY, TAMSG, 0);
+					printf("\nAguarde o envio!!\n");   
 				} while((atoi(cordY) > larguraMAX) && (atoi(cordY) < 0));
+				                     	//ENVIA SUA VEZ 
+					send(sock_conn, cordY, TAMSG, 0);
 				verificaUsuario(read(sock_conn, mensagem, TAMSG));
 				mapaAdversario->Mapa[atoi(cordY)][atoi(cordX)] = mensagem[0];
+				//system("clear");
 				imprimeVERDE("\nAguarde pelo Ataque!");
+				send(sock_conn, cordY, TAMSG, 0);
 			}
 			else
 			{
 				imprimeVERDE("\nAguarde pelo Ataque!");
+
 				verificaUsuario(recv(sock_conn, cordX, sizeof(cordX), 0)); //X
 				send(sock_conn, cordX, TAMSG, 0);
-				verificaUsuario(recv(sock_conn, cordY, sizeof(cordY), 0)); //Y
+				verificaUsuario(recv(sock_conn, cordY, sizeof(cordY), 0)); 	//Y
 				send(sock_conn, cordY, TAMSG, 0);
 				verificaUsuario(recv(sock_conn, celula, sizeof(celula), 0)); //VALOR CELULA
-				mapaJodadorUm->Mapa[atoi(cordY)][atoi(cordX)] = mensagem[0];
+				mapaJodadorUm->Mapa[atoi(cordY)][atoi(cordX)] = celula[0];
+				send(sock_conn, cordY, TAMSG, 0);
+				printf("\nMENSAGEM RECEBIDA CordX: %s", cordX);
+				printf("\nMENSAGEM RECEBIDA CordY: %s", cordY);
+				printf("\nMENSAGEM RECEBIDA Celula: %s", celula);
 			}
+		send(sock_conn, cordY, TAMSG, 0);
     }
-	system("clear");		
+	//system("clear");		
 	return 0;	
 }
