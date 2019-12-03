@@ -66,7 +66,7 @@
     //Conjunto de dados presente em um Tabuleiro de mapa
     typedef struct estruturaMapa
     {   
-        int Mapa[alturaMAX][larguraMAX];                             //  ARMAZENA O MAPA
+        int Mapa[alturaMAX][larguraMAX];       //  ARMAZENA O MAPA
         int navioUsado[TIPOSNAVIO];             //  TIPO DE NAVIO USADO
         int Total;                              //  QUANTIDADE DE NAVIOS RESTANTES
     } declaraMapa;

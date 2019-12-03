@@ -71,29 +71,26 @@ void *jogoBatalha(void *socket_desc)
     listaSocket *jogoIniciado    = (struct listaSocket *)socket_desc;
     declaraMapa *mapaJodadorUm   = alocaMatriz();
     declaraMapa *mapaJodadorDois = alocaMatriz();
-    pthread_mutex_t mutex;
-
-    int checkOk1, checkOk2;
-    char auxiliarNome[2][TAMSG], *mensagem  = malloc(sizeof(char)*TAMSG);
+    int checkOk1, checkOk2, cont;
+    char auxiliarNome[2][TAMSG], mensagem[TAMSG];
+    char cordX[TAMSG], cordY[TAMSG];
     
+    //RECEBE NOME DO JOGADOR 1 E ENVIA PARA O JOGADOR 2
+    strcpy(auxiliarNome[1], "Aguardando Nome");
+	send(jogoIniciado[0].listSock[0], auxiliarNome[1], TAMSG, 0);                   //ENVIA SUA VEZ 
+    verificaUsuario(recv(jogoIniciado[0].listSock[0], auxiliarNome[0], TAMSG, 0));  //RECEBE NOME DE USUARIO   
+	
+    send(jogoIniciado[0].listSock[1], auxiliarNome[0], TAMSG, 0);  
+    printf("\n Mensagem 1 = %s", auxiliarNome[0]);
+    //RECEBE O NOME DO JOGADOR 2 E ENVIA PARA O JOGADOR 1
+    verificaUsuario(recv(jogoIniciado[0].listSock[1], auxiliarNome[1], TAMSG, 0));  //RECEBE NOME DE USUARIO                           
+	send(jogoIniciado[0].listSock[0], auxiliarNome[1], TAMSG, 0);     
+    printf("\n Mensagem 2 = %s", auxiliarNome[1]);
+
     
-    strcpy(auxiliarNome[0], "Aguardando Nome");
-    strcpy(mensagem, auxiliarNome[0]);
-
-	send(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //ENVIA SUA VEZ 
-    checkOk1 = recv(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //RECEBE NOME DE USUARIO   
-    strcpy(auxiliarNome[1], mensagem);
-    printf("\n Mensagem 1 = %s", mensagem);
-
-	send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0);                          //ENVIA SUA VEZ
-    checkOk2 = recv(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0);                          //RECEBE NOME DE USUARIO                           
-    strcpy(auxiliarNome[0], mensagem);
-    printf("\n Mensagem 2 = %s", mensagem);
-    strcpy(mensagem, "OK");
-
-    int cont;
     //ENVIA OK E RECEBE O MAPA DO JOGADOR 1
-	send(jogoIniciado[0].listSock[0], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 1                            
+    strcpy(mensagem, "OK MAPA");
+	write(jogoIniciado[0].listSock[0], mensagem, TAMSG);                          //  ENVIA OK JOGADOR 1                            
     for(cont = 0; cont < larguraMAX; cont++)
     {
         read(jogoIniciado[0].listSock[0], (declaraMapa*)&mapaJodadorUm->Mapa[cont], sizeof(mapaJodadorUm->Mapa[cont])); //  RECEBE MATRIZ MAPA JOGADOR 1         
@@ -104,6 +101,7 @@ void *jogoBatalha(void *socket_desc)
     mostraMapa(mapaJodadorUm);                                                      //  IMPRIME MAPA JOGADOR 1
     
     //ENVIA OK E RECEBE O MAPA DO JOGADOR 2
+    strcpy(mensagem, "OK MAPA");
 	send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0);                          //  ENVIA OK JOGADOR 1                            
     for(cont = 0; cont < larguraMAX; cont++)
     {
@@ -113,37 +111,26 @@ void *jogoBatalha(void *socket_desc)
     read(jogoIniciado[0].listSock[1], (declaraMapa*)&mapaJodadorDois->Total, sizeof(mapaJodadorDois->Total));
     printf("\nJOGADOR 2\n");    
     mostraMapa(mapaJodadorDois);       
-
-    strcpy(mensagem, "OK");                                                         //  ENVIA OK JOGADOR 1
-    send(jogoIniciado[0].listSock[1], mensagem, TAMSG, 0); 
-    int aux = 0, aux2 = 1; 
+    
+    send(jogoIniciado[0].listSock[0], mensagem, sizeof(mensagem), 0);
+	int aux = 0, aux2 = 1, checkOk; 
     while(1)
-    {  
-        recv(jogoIniciado[0].listSock[aux], mensagem, TAMSG, 0);                       //  ENVIA OK JOGADOR 1
-        send(jogoIniciado[0].listSock[aux2], mensagem, TAMSG, 0); 
-        printf("\nRECEBEU A COORDENADA: %s", mensagem);
-        
-        if(aux == 0)
+    {
+        strcpy(mensagem, "SUA VEZ");  
+        write(jogoIniciado[0].listSock[aux], mensagem, sizeof(mensagem));
+		verificaUsuario(recv(jogoIniciado[0].listSock[aux], mensagem, sizeof(mensagem), 0));
+        write(jogoIniciado[0].listSock[aux], mensagem, sizeof(mensagem));
+		verificaUsuario(recv(jogoIniciado[0].listSock[aux], mensagem, sizeof(mensagem), 0));
+        if(aux = 0)
         {
-            aux = 1; 
+            aux = 1;
             aux2 = 0;
         }
         else
         {
+            aux = 0;
             aux2 = 1;
-            aux = 0; 
         }
-    }
-
-    if((checkOk1 == 0) || (checkOk2 == 0))
-    {
-        puts("\nCliente foi desconectado");
-        fflush(stdout);
-        pthread_exit(NULL);
-    }
-    else if((checkOk1 == -1) || (checkOk2 == -1))
-    {
-        perror("\nReceber do Cliente Falhou");
     }
     return 0;
 }

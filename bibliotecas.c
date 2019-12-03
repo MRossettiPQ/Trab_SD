@@ -16,6 +16,7 @@
     int         insereBarco         (declaraMapa *mapaDeclarado, int Barco, int cordX, int cordY, int orientacao);
     int         verificaBarcoUsado  (declaraMapa *mapaDeclarado);
 
+    void         verificaUsuario    (int checkOk);
 
 void bemVindo                       ()
 {
@@ -333,4 +334,18 @@ declaraMapa *criaMapa               ()
 
     imprimeAMARELO("\nNavios ao Mar, prepare-se para a batalha!\n");
     return mapaJogo;
+}
+
+void verificaUsuario(int checkOk)
+{
+    if(checkOk == 0)
+    {
+        puts("\nCliente foi desconectado");
+        fflush(stdout);
+        pthread_exit(NULL);
+    }
+    else if(checkOk == -1)
+    {
+        perror("\nReceber do Cliente Falhou");
+    }
 }
