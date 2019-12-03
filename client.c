@@ -75,9 +75,15 @@ int main(int argc, char *argv[])
 		
 		printf("\nAguarde sua vez!!\n"); 
 	 	read(sock_conn, mensagem, TAMSG);
-		printf("AQUI");
 		while(1)
 		{
+			if(confereMapa(mapaJodadorUm) == 0)
+			{
+				imprimeVERMELHO("\nVOCÊ PERDEU\n\n"); 
+				send(sock_conn, mensagem, sizeof(mensagem), 0);
+				close(sock_conn);
+				exit(1);
+			}
 			//NOME DOS JOGADORES ENVOLVIDOS
 			printf("\n\t\t");
 			imprimeCIANO(auxiliarNome[0]);
@@ -97,63 +103,52 @@ int main(int argc, char *argv[])
 			verificaUsuario(read(sock_conn, mensagem, TAMSG));
 			if(strcmp(mensagem, "SUA VEZ") == 0)
 			{
-				printf("\nAtaque X: ");
-				fgets(cordX, 30, stdin);
-				if (cordX[strlen(cordX) - 1] == '\n')
+				//COORDENADA X
+				do
 				{
-					cordX[strlen(cordX) - 1] = '\0';
-				}
-				write(sock_conn, cordX, sizeof(cordX));
-				printf("\nAguarde\n");
+					printf("\nAtaque Cord X: ");
+					scanf("%s", cordX);
+					if (cordX[strlen(cordX) - 1] == '\n')
+					{
+						cordX[strlen(cordX) - 1] = '\0';
+					}
+					if((atoi(cordX) > larguraMAX) && (atoi(cordX) < 0))
+					{
+						printf("\nCordX invalida!! Tente um valor abaixo de %i", larguraMAX);
+					} 
+					printf("\nAguarde o envio!!\n");                        	//ENVIA SUA VEZ 
+					send(sock_conn, cordX, TAMSG, 0);
+				} while((atoi(cordX) > larguraMAX) && (atoi(cordX) < 0));
+				//COORDENADA Y
+				do
+				{
+					verificaUsuario(read(sock_conn, mensagem, TAMSG));
+					printf("\nAtaque Cord Y: ");
+					scanf("%s", cordY);
+					if (cordY[strlen(cordY) - 1] == '\n')
+					{
+						cordY[strlen(cordY) - 1] = '\0';
+					}
+					if((atoi(cordY) > larguraMAX) && (atoi(cordY) < 0))
+					{
+						printf("\nCordX invalida!! Tente um valor abaixo de %i", larguraMAX);
+					} 
+					printf("\nAguarde o envio!!\n");                        	//ENVIA SUA VEZ 
+					send(sock_conn, cordY, TAMSG, 0);
+				} while((atoi(cordY) > larguraMAX) && (atoi(cordY) < 0));
 				verificaUsuario(read(sock_conn, mensagem, TAMSG));
-				printf("\nAtaque Y: ");
-				fgets(cordY, 30, stdin);
-				if (cordY[strlen(cordY) - 1] == '\n')
-				{
-					cordY[strlen(cordY) - 1] = '\0';
-				}
-				write(sock_conn, cordY, sizeof(cordY));
-				
-				checkOk = recv(sock_conn, mensagem, sizeof(mensagem), 0);
-				verificaUsuario(checkOk);
-				if(strcmp, "1")
-				{
-					//mapaAdversario->Mapa = mensagem[0];
-				}
-				strcpy(mensagem, "VEZ OUTRO");
+				mapaAdversario->Mapa[atoi(cordY)][atoi(cordX)] = mensagem[0];
+				imprimeVERDE("\nAguarde pelo Ataque!");
 			}
 			else
 			{
-				checkOk = recv(sock_conn, cordX, sizeof(cordX), 0); //X
-				verificaUsuario(checkOk);
-				checkOk = recv(sock_conn, cordY, sizeof(cordY), 0); //Y
-				verificaUsuario(checkOk);
-				checkOk = recv(sock_conn, celula, sizeof(celula), 0); //VALOR CELULA
-				verificaUsuario(checkOk);
-				switch (atoi(celula))
-				{
-					case 0:
-						//mapaJodadorUm->Mapa = ERROU;
-						break;
-					case 1:
-						//mapaJodadorUm->Mapa = ACERTOU;
-						break;
-					default:
-						break;
-				}
-			}
-			if(confereMapa(mapaJodadorUm) == 0)
-			{
-				imprimeVERMELHO("\nVOCÊ PERDEU\n\n"); 
-				send(sock_conn, mensagem, sizeof(mensagem), 0);
-				close(sock_conn);
-				exit(1);
-			}
-			else if(confereMapa(mapaAdversario) == 0)
-			{
-				imprimeVERMELHO("\nVOCÊ VENCEU\n\n"); 
-				close(sock_conn);
-				exit(1);
+				imprimeVERDE("\nAguarde pelo Ataque!");
+				verificaUsuario(recv(sock_conn, cordX, sizeof(cordX), 0)); //X
+				send(sock_conn, cordX, TAMSG, 0);
+				verificaUsuario(recv(sock_conn, cordY, sizeof(cordY), 0)); //Y
+				send(sock_conn, cordY, TAMSG, 0);
+				verificaUsuario(recv(sock_conn, celula, sizeof(celula), 0)); //VALOR CELULA
+				mapaJodadorUm->Mapa[atoi(cordY)][atoi(cordX)] = mensagem[0];
 			}
     }
 	system("clear");		

@@ -118,10 +118,47 @@ void *jogoBatalha(void *socket_desc)
     {
         strcpy(mensagem, "SUA VEZ");  
         write(jogoIniciado[0].listSock[aux], mensagem, sizeof(mensagem));
-		verificaUsuario(recv(jogoIniciado[0].listSock[aux], mensagem, sizeof(mensagem), 0));
+        verificaUsuario(recv(jogoIniciado[0].listSock[aux], cordX, TAMSG, 0));
+        printf("\n Usuario %i atacou cordX: %s", aux+1, cordX);
         write(jogoIniciado[0].listSock[aux], mensagem, sizeof(mensagem));
-		verificaUsuario(recv(jogoIniciado[0].listSock[aux], mensagem, sizeof(mensagem), 0));
-        if(aux = 0)
+		verificaUsuario(recv(jogoIniciado[0].listSock[aux], cordY, TAMSG, 0));
+        printf("\n Usuario %i atacou cordY: %s", aux+1, cordY);
+        
+        if(aux == 0)
+        {
+            checkOk = atacaBarco(mapaJodadorDois, atoi(cordX), atoi(cordY));
+            write(jogoIniciado[0].listSock[aux], (char*)&mapaJodadorDois->Mapa[atoi(cordY)][atoi(cordX)], sizeof(mapaJodadorDois->Mapa[atoi(cordY)][atoi(cordX)]));
+            
+            //ENVIA CORD X PARA O JOGADOR ATACADO
+            write(jogoIniciado[0].listSock[aux2], cordX, sizeof(cordX));
+            verificaUsuario(recv(jogoIniciado[0].listSock[aux2], cordX, TAMSG, 0));
+            //ENVIA CORD Y PARA O JOGADOR ATACADO
+            write(jogoIniciado[0].listSock[aux2], mensagem, sizeof(mensagem));
+		    verificaUsuario(recv(jogoIniciado[0].listSock[aux2], cordY, TAMSG, 0));
+            //ENVIA O ESTADO DA CELULA PARA O JOGADOR ATACADO
+            write(jogoIniciado[0].listSock[aux2], (char*)&mapaJodadorDois->Mapa[atoi(cordY)][atoi(cordX)], sizeof(mapaJodadorDois->Mapa[atoi(cordY)][atoi(cordX)]));
+        
+        }
+        else
+        {
+            checkOk = atacaBarco(mapaJodadorUm, atoi(cordX), atoi(cordY));
+            write(jogoIniciado[0].listSock[aux], (char*)&mapaJodadorUm->Mapa[atoi(cordY)][atoi(cordX)], sizeof(mapaJodadorDois->Mapa[atoi(cordY)][atoi(cordX)]));
+            
+            //ENVIA CORD X PARA O JOGADOR ATACADO
+            write(jogoIniciado[0].listSock[aux2], cordX, sizeof(cordX));
+            verificaUsuario(recv(jogoIniciado[0].listSock[aux2], cordX, TAMSG, 0));
+            //ENVIA CORD Y PARA O JOGADOR ATACADO
+            write(jogoIniciado[0].listSock[aux2], mensagem, sizeof(mensagem));
+		    verificaUsuario(recv(jogoIniciado[0].listSock[aux2], cordY, TAMSG, 0));
+            //ENVIA O ESTADO DA CELULA PARA O JOGADOR ATACADO
+            write(jogoIniciado[0].listSock[aux2], (char*)&mapaJodadorUm->Mapa[atoi(cordY)][atoi(cordX)], sizeof(mapaJodadorDois->Mapa[atoi(cordY)][atoi(cordX)]));
+         }
+        printf("\nJOGADOR 1\n");    
+        mostraMapa(mapaJodadorUm); 
+        printf("\nJOGADOR 2\n");    
+        mostraMapa(mapaJodadorDois);       
+
+        if(aux == 0)
         {
             aux = 1;
             aux2 = 0;
@@ -131,6 +168,20 @@ void *jogoBatalha(void *socket_desc)
             aux = 0;
             aux2 = 1;
         }
+		if(confereMapa(mapaJodadorUm) == 0)
+		{
+			imprimeVERMELHO("\nJOGADOR 2 VENCEU\n\n"); 
+			close(jogoIniciado[0].listSock[0]);
+			close(jogoIniciado[0].listSock[1]);
+			exit(1);
+		}
+		else if(confereMapa(mapaJodadorDois) == 0)
+		{
+			imprimeVERMELHO("\nJOGADOR 1 VENCEU\n\n"); 
+			close(jogoIniciado[0].listSock[0]);
+			close(jogoIniciado[0].listSock[1]);
+			exit(1);
+		}
     }
     return 0;
 }
