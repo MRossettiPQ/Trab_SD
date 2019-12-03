@@ -72,8 +72,8 @@
     } declaraMapa;
     typedef struct estruturaAtaque
     {   
-        char cordX;
-        char cordY;
+        int cordX;
+        int cordY;
         char Celula;
     } declaraAtaque;
 #define BIBLIOTECAS_H
