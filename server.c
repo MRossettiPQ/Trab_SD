@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
             perror("Não foi possível criar a thread");
             return 1;
         }
+        pthread_join(thread_id, NULL);
     }
 	if (socket_desc < 0)
     {
@@ -166,18 +167,18 @@ void *jogoBatalha(void *socket_desc)
 			imprimeVERMELHO("\nJOGADOR 2 VENCEU\n\n");
             strcpy(mensagem, "VOCE VENCEU"); 
 			write(jogoIniciado[0].listSock[1], mensagem, sizeof(mensagem));
-            close(jogoIniciado[0].listSock[0]);
-			close(jogoIniciado[0].listSock[1]);
-			exit(1);
+            strcpy(mensagem, "VOCE PERDEU"); 
+			write(jogoIniciado[0].listSock[0], mensagem, sizeof(mensagem));
+            return 0;
 		}
 		else if(confereMapa(mapaJodadorDois) == 0)
 		{
 			imprimeVERMELHO("\nJOGADOR 1 VENCEU\n\n"); 
             strcpy(mensagem, "VOCE VENCEU"); 
 			write(jogoIniciado[0].listSock[0], mensagem, sizeof(mensagem));
-            close(jogoIniciado[0].listSock[0]);
-			close(jogoIniciado[0].listSock[1]);
-			exit(1);
+            strcpy(mensagem, "VOCE PERDEU"); 
+			write(jogoIniciado[0].listSock[1], mensagem, sizeof(mensagem));
+            return 0;
 		}
         else
         {
@@ -185,6 +186,7 @@ void *jogoBatalha(void *socket_desc)
             write(jogoIniciado[0].listSock[0], mensagem, TAMSG);
             write(jogoIniciado[0].listSock[1], mensagem, TAMSG);
         }
+        //if()
     }
     return 0;
 }

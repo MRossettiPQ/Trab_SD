@@ -36,10 +36,10 @@
     #define tamanhoPATRULHA     2               //  TAMANHO DE CASAS OCUPADAS PELO PATRULHA  
 
 
-    #define qtdPORTAVIAO        1               //  QUANTIDADE DE PORTAVIAO NO JOGO
+    #define qtdPORTAVIAO        0               //  QUANTIDADE DE PORTAVIAO NO JOGO
     #define qtdENCOURACADO      0               //1  QUANTIDADE DE ENCOURACADO  NO JOGO 
     #define qtdSUBMARINO        0               //2  QUANTIDADE DE SUBMARINO NO JOGO
-    #define qtdPATRULHA         0               //2  QUANTIDADE DE PATRULHA NO JOGO
+    #define qtdPATRULHA         1               //2  QUANTIDADE DE PATRULHA NO JOGO
 
 
     #define VERTICAL            1               //  ORIENTAÇÃO DA IMPRESSÃO DO MODELO
